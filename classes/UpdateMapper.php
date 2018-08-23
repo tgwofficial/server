@@ -21,7 +21,8 @@ class UpdateMapper extends Mapper
 
         $results = [];
         while($row = $stmt->fetch()) {
-            $results[] = new UpdateEntity($row);
+			$update = new UpdateEntity($row);
+            $results[] = $update->toArray();
         }
         return $results;
     }

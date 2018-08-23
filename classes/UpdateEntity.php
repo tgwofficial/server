@@ -48,4 +48,8 @@ class UpdateEntity
         return $this->server_timestamp;
     }
 
+    public function toArray(){
+        return ["update_id"=>$this->getUpdateId(),"form_name"=>$this->getFormName(),"data"=>$this->getData(),"user_id"=>$this->getUserId()];
+    }
+
 }
