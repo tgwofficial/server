@@ -1,6 +1,6 @@
 <?php
 
-require_once 'config/database.php';
+require_once './config/database.php';
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
