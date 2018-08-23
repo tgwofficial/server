@@ -34,4 +34,29 @@ $container['logger'] = function($c) {
     return $logger;
 };
 
+$app->post('/api/push', function (Request $request, Response $response) {
+    $updates = $request->getParsedBody();
+    $this->logger->addInfo("Push Update: ".json_encode($updates));
+    foreach ($updates as $update) {
+        $updateEntity = new UpdateEntity($update);
+        $updateMapper = new UpdateMapper($this->db);
+        $updateMapper->save($updateEntity);
+    }
+
+    $response = $response->withJson(["success"=>true], 201);
+    return $response;
+});
+
+$app->get('/api/pull', function (Request $request, Response $response) {
+    $update_id = $request->getParam('update-id');
+    $batch_size = $request->getParam('batch-size');
+    $this->logger->addInfo("Pull Update: update-id=".$update_id."&batch-size=".$batch_size);
+    $mapper = new UpdateMapper($this->db);
+    $updates = $mapper->getBatchUpdates($update_id,$batch_size);
+
+    $response = $response->withJson($updates);
+
+    return $response;
+});
+
 $app->run();
