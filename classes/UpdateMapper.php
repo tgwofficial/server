@@ -27,6 +27,19 @@ class UpdateMapper extends Mapper
         return $results;
     }
 
+	public function getBatchUpdatesByLocationId($location_id,$update_id,$batch) {
+        $sql = "SELECT *
+            from updates WHERE update_id > $update_id AND location_id = '$location_id' LIMIT $batch";
+        $stmt = $this->db->query($sql);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+			$update = new UpdateEntity($row);
+            $results[] = $update->toArray();
+        }
+        return $results;
+    }
+
     public function getUpdateById($id) {
         $sql = "SELECT *
             from updates where update_id = :update_id";

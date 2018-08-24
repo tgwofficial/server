@@ -6,6 +6,7 @@ class UpdateEntity
     protected $update_id;
     protected $form_name;
     protected $data;
+    protected $location_id;
     protected $user_id;
     protected $server_timestamp;
 
@@ -16,6 +17,7 @@ class UpdateEntity
         $this->update_id = $data['update_id'];
         $this->form_name = $data['form_name'];
         $this->data = $data['data'];
+        $this->location_id = $data['location_id'];
         $this->user_id = $data['user_id'];
         if(isset($data['server_timestamp'])) {
             $this->server_timestamp = $data['server_timestamp'];
@@ -40,6 +42,10 @@ class UpdateEntity
         return $this->data;
     }
 
+    public function getLocationId() {
+        return $this->location_id;
+    }
+
     public function getUserId() {
         return $this->user_id;
     }
@@ -49,7 +55,7 @@ class UpdateEntity
     }
 
     public function toArray(){
-        return ["update_id"=>$this->getUpdateId(),"form_name"=>$this->getFormName(),"data"=>$this->getData(),"user_id"=>$this->getUserId()];
+        return ["update_id"=>$this->getUpdateId(),"form_name"=>$this->getFormName(),"data"=>$this->getData(),"location_id"=>$this->getLocationId(),"user_id"=>$this->getUserId()];
     }
 
 }

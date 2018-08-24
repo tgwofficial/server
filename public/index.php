@@ -50,10 +50,14 @@ $app->post('/api/push', function (Request $request, Response $response) {
 $app->get('/api/pull', function (Request $request, Response $response) {
     $update_id = $request->getParam('update-id');
     $batch_size = $request->getParam('batch-size');
-    $this->logger->addInfo("Pull Update: update-id=".$update_id."&batch-size=".$batch_size);
+    $location_id = $request->getParam('location-id');
+    if($update_id==""||$batch_size==""||$location_id==""){
+        $this->logger->addInfo("Pull Update: Error request");
+        return $response->withStatus(400);
+    }
+    $this->logger->addInfo("Pull Update: location-id=".$location_id."&update-id=".$update_id."&batch-size=".$batch_size);
     $mapper = new UpdateMapper($this->db);
-    $updates = $mapper->getBatchUpdates($update_id,$batch_size);
-
+    $updates = $mapper->getBatchUpdatesByLocationId($location_id,$update_id,$batch_size);
     $response = $response->withJson($updates);
 
     return $response;
