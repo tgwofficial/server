@@ -36,6 +36,21 @@ $container['logger'] = function($c) {
 
 $app->post('/api/push', function (Request $request, Response $response) {
     $updates = $request->getParsedBody();
+    if($updates==null){
+        $this->logger->addInfo("Push Update: error, updates is null");
+        return $response->withJson(["error"=>"updates is null"], 400);
+    }
+    if(key($updates)!='0'){
+        $this->logger->addInfo("Push Update: error, updates is not array");
+        return $response->withJson(["error"=>"updates is not array"], 400);
+    }
+    $keys = ["update_id","form_name","data","location_id","user_id"];
+    foreach ($keys as $key) {
+        if(!array_key_exists($key,$updates[0])){
+            $this->logger->addInfo("Push Update: error, $key is missing");
+            return $response->withJson(["error"=>"$key is missing"], 400);
+        }
+    }
     $this->logger->addInfo("Push Update: ".json_encode($updates));
     foreach ($updates as $update) {
         $updateEntity = new UpdateEntity($update);
