@@ -19,6 +19,8 @@ class LocationEntity
         }
 		if(isset($data['uuid'])) {
             $this->uuid = $data['uuid'];
+        }else{
+            $this->uuid = UUID::v4();
         }
 	}
 
