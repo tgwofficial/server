@@ -1,5 +1,7 @@
 <?php
 
+defined('BASE_URL') OR exit('No direct script access allowed');
+
 class UpdateMapper extends Mapper
 {
 	public function getUpdates($update_id) {
