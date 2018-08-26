@@ -61,6 +61,7 @@ class UpdateMapper extends Mapper
             "update_id" => $update->getUpdateId(),
 			"form_name" => $update->getFormName(),
 			"data" => json_encode($update->getData()),
+			"location_id" => $update->getLocationId(),
 			"user_id" => $update->getUserId(),
         ]);
 
