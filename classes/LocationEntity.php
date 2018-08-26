@@ -7,6 +7,7 @@ class LocationEntity
     protected $location_id;
     protected $name;
     protected $parent_location;
+    protected $location_tag_id;
     protected $uuid;
 
 	public function __construct(array $data) {
@@ -17,6 +18,7 @@ class LocationEntity
 		if(isset($data['parent_location'])) {
             $this->parent_location = $data['parent_location'];
         }
+        $this->location_tag_id = $data['location_tag_id'];
 		if(isset($data['uuid'])) {
             $this->uuid = $data['uuid'];
         }else{
@@ -34,6 +36,10 @@ class LocationEntity
 
     public function getParentLocation() {
         return $this->parent_location;
+    }
+
+    public function getLocationTagId() {
+        return $this->location_tag_id;
     }
 
     public function getUuid() {
