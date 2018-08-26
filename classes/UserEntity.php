@@ -11,7 +11,7 @@ class UserEntity
 
 	public function __construct(array $data) {
 		if(isset($data['user_id'])) {
-            $this->id = $data['user_id'];
+            $this->user_id = $data['user_id'];
         }
         $this->username = $data['username'];
         $this->password = $data['password'];
