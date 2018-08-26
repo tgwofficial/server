@@ -7,6 +7,10 @@ class UserEntity
     protected $user_id;
     protected $username;
     protected $password;
+    protected $fullname;
+    protected $contact;
+    protected $address;
+    protected $location_id;
     protected $uuid;
 
 	public function __construct(array $data) {
@@ -15,6 +19,14 @@ class UserEntity
         }
         $this->username = $data['username'];
         $this->password = $data['password'];
+        $this->fullname = $data['fullname'];
+        if(isset($data['contact'])) {
+            $this->contact = $data['contact'];
+        }
+        if(isset($data['address'])) {
+            $this->address = $data['address'];
+        }
+        $this->location_id = $data['location_id'];
 		if(isset($data['uuid'])) {
             $this->uuid = $data['uuid'];
         }else{
@@ -32,6 +44,22 @@ class UserEntity
 
     public function getPassword() {
         return $this->password;
+    }
+
+    public function getFullname() {
+        return $this->fullname;
+    }
+
+    public function getContact() {
+        return $this->contact;
+    }
+
+    public function getAddress() {
+        return $this->address;
+    }
+
+    public function getLocationId() {
+        return $this->location_id;
     }
 
     public function getUuid() {
