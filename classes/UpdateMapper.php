@@ -53,8 +53,8 @@ class UpdateMapper extends Mapper
 
     public function save(UpdateEntity $update) {
         $sql = "INSERT INTO updates
-            (update_id, form_name, data, user_id) values
-            (:update_id, :form_name, :data, :user_id)";
+            (update_id, form_name, data, location_id, user_id) values
+            (:update_id, :form_name, :data, :location_id, :user_id)";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
