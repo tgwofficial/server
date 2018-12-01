@@ -4,15 +4,17 @@ defined('BASE_URL') OR exit('No direct script access allowed');
 
 class LocationMapper extends Mapper
 {
-	public function getUsers() {
+	public function getLocations() {
         $sql = "SELECT *
             from location";
         $stmt = $this->db->query($sql);
 
         $results = [];
         while($row = $stmt->fetch()) {
-            $results[] = new LocationEntity($row);
+            $loc = new LocationEntity($row);
+            $results[] = $loc->toArray();
         }
+
         return $results;
     }
 
@@ -23,7 +25,41 @@ class LocationMapper extends Mapper
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $id]);
 
-        return new LocationEntity($stmt->fetch());
+        $res = $stmt->fetch();
+        if(!$res) return [];
+        $loc = new LocationEntity($res);
+
+        return $loc->toArray();
+    }
+
+    public function getLocationsWithNames() {
+        $sql = "SELECT location.location_id,location.name,child.name as parent_location,location_tag.name as location_tag_id,location.uuid
+            from location LEFT JOIN location as child ON child.parent_location=location.location_id
+            LEFT JOIN location_tag ON location.location_tag_id=location_tag.location_tag_id";
+        $stmt = $this->db->query($sql);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $loc = new LocationEntity($row);
+            $results[] = $loc->toArray();
+        }
+
+        return $results;
+    }
+
+    public function getLocationByIdWithNames($id) {
+        $sql = "SELECT location.location_id,location.name,child.name as parent_location,location_tag.name as location_tag_id,location.uuid
+            from location LEFT JOIN location as child ON child.parent_location=location.location_id
+            LEFT JOIN location_tag ON location.location_tag_id=location_tag.location_tag_id
+            where location.location_id = :location_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(["location_id" => $id]);
+
+        $res = $stmt->fetch();
+        if(!$res) return [];
+        $loc = new LocationEntity($res);
+
+        return $loc->toArray();
     }
 
     public function save(LocationEntity $location) {

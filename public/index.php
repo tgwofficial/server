@@ -78,4 +78,112 @@ $app->get('/api/pull', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->post('/api/location/create', function (Request $request, Response $response) {
+    $locs = $request->getParsedBody();
+    if($locs==null){
+        $this->logger->addInfo("Push Update: error, locs is null");
+        return $response->withJson(["error"=>"locs is null"], 400);
+    }
+    $keys = ["name","parent_location","location_tag_id"];
+    foreach ($keys as $key) {
+        if(!array_key_exists($key,$locs)){
+            $this->logger->addInfo("Push Update: error, $key is missing");
+            return $response->withJson(["error"=>"$key is missing"], 400);
+        }
+    }
+    $this->logger->addInfo("Push Update: ".json_encode($locs));
+    $locEntity = new LocationEntity($locs);
+    $locMapper = new LocationMapper($this->db);
+    $locMapper->save($locEntity);
+
+    $response = $response->withJson(["success"=>true], 201);
+
+
+    return $response;
+});
+
+$app->get('/api/locations', function (Request $request, Response $response) {
+    $this->logger->addInfo("Get All Location");
+    $mapper = new LocationMapper($this->db);
+    $locations = $mapper->getLocations();
+    $response = $response->withJson($locations);
+
+    return $response;
+});
+
+$app->get('/api/location', function (Request $request, Response $response) {
+    $location_id = $request->getParam('location-id');
+    if($location_id==""){
+        $this->logger->addInfo("Get Location: Error request");
+        return $response->withStatus(400);
+    }
+    $this->logger->addInfo("Get Location: location-id=".$location_id);
+    $mapper = new LocationMapper($this->db);
+    $location = $mapper->getLocationById($location_id);
+    $response = $response->withJson($location);
+
+    return $response;
+});
+
+
+$app->post('/api/user/create', function (Request $request, Response $response) {
+    $response->getBody()->write("Atma Project API V1 - Create User");
+
+    return $response;
+});
+
+$app->get('/api/user', function (Request $request, Response $response) {
+    $response->getBody()->write("Atma Project API V1 - Get User");
+
+    return $response;
+});
+
+$app->get('/api/users', function (Request $request, Response $response) {
+    $response->getBody()->write("Atma Project API V1 - Get All Users");
+
+    return $response;
+});
+
+
+$app->post('/api/auth/login', function (Request $request, Response $response) {
+    $credential = $request->getParsedBody();
+    if($credential==null){
+        $this->logger->addInfo("Login: error, credential is null");
+        return $response->withJson(["error"=>"credential is null"], 400);
+    }
+    $keys = ["username","password"];
+    foreach ($keys as $key) {
+        if(!array_key_exists($key,$credential)){
+            $this->logger->addInfo("Login: error, $key is missing");
+            return $response->withJson(["error"=>"$key is missing"], 400);
+        }
+    }
+    $postdata = http_build_query(
+        array(
+            'identity' => $credential['username'],
+            'password' => $credential['password']
+        )
+    );
+
+    $opts = array('http' =>
+        array(
+            'method'  => 'POST',
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+            'content' => $postdata
+        )
+    );
+
+    $context  = stream_context_create($opts);
+    $logged = file_get_contents('http://localhost/atma-dashboard/auth/login_api', false, $context)=='success'?true:false;
+    if($logged){
+        $mapper = new LoginMapper($this->db);
+        $info = $mapper->getLoginInfo($credential['username']);
+        $response = $response->withJson($info);
+    }else{
+        return $response->withStatus(401);
+    }
+
+    return $response;
+});
+
 $app->run();

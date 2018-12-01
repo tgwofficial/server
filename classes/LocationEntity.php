@@ -12,7 +12,7 @@ class LocationEntity
 
 	public function __construct(array $data) {
 		if(isset($data['location_id'])) {
-            $this->id = $data['location_id'];
+            $this->location_id = $data['location_id'];
         }
         $this->name = $data['name'];
 		if(isset($data['parent_location'])) {
@@ -44,6 +44,10 @@ class LocationEntity
 
     public function getUuid() {
         return $this->uuid;
+    }
+
+    public function toArray(){
+        return ["location_id"=>$this->getLocationId(),"name"=>$this->getName(),"parent_location"=>$this->getParentLocation(),"location_tag_id"=>$this->getLocationTagId(),"uuid"=>$this->getUuid()];
     }
 
 }
