@@ -186,4 +186,52 @@ $app->post('/api/auth/login', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->get('/api/auth/login', function (Request $request, Response $response) {
+    $username = $request->getParam('username');
+    $password = $request->getParam('password');
+    if($username==""||$password==""){
+        $this->logger->addInfo("Login: Error request, username or password is empty");
+        return $response->withJson(["error"=>"username or password is empty"], 400);
+    }
+    $credential['username'] = $username;
+    $credential['password'] = $password;
+    if($credential==null){
+        $this->logger->addInfo("Login: error, credential is null");
+        return $response->withJson(["error"=>"credential is null"], 400);
+    }
+    $keys = ["username","password"];
+    foreach ($keys as $key) {
+        if(!array_key_exists($key,$credential)){
+            $this->logger->addInfo("Login: error, $key is missing");
+            return $response->withJson(["error"=>"$key is missing"], 400);
+        }
+    }
+    $postdata = http_build_query(
+        array(
+            'identity' => $credential['username'],
+            'password' => $credential['password']
+        )
+    );
+
+    $opts = array('http' =>
+        array(
+            'method'  => 'POST',
+            'header'  => 'Content-type: application/x-www-form-urlencoded',
+            'content' => $postdata
+        )
+    );
+
+    $context  = stream_context_create($opts);
+    $logged = file_get_contents('http://ard.theseforall.org/auth/login_api', false, $context)=='success'?true:false;
+    if($logged){
+        $mapper = new LoginMapper($this->db);
+        $info = $mapper->getLoginInfo($credential['username']);
+        $response = $response->withJson($info);
+    }else{
+        return $response->withStatus(401);
+    }
+
+    return $response;
+});
+
 $app->run();
