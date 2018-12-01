@@ -174,7 +174,7 @@ $app->post('/api/auth/login', function (Request $request, Response $response) {
     );
 
     $context  = stream_context_create($opts);
-    $logged = file_get_contents('http://localhost/atma-dashboard/auth/login_api', false, $context)=='success'?true:false;
+    $logged = file_get_contents('http://ard.theseforall.org/auth/login_api', false, $context)=='success'?true:false;
     if($logged){
         $mapper = new LoginMapper($this->db);
         $info = $mapper->getLoginInfo($credential['username']);
