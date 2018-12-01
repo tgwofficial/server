@@ -10,13 +10,21 @@ class LoginMapper extends Mapper
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["username" => $username]);
         $user = $stmt->fetch();
-        $res['user'] = $user;
 
         $sql = "SELECT *
             from user_map where user_id = :user_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["user_id" => $user['id']]);
         $user_map = $stmt->fetch();
+
+        $sql = "SELECT *, name
+            from users_groups LEFT JOIN groups ON users_groups.group_id=groups.id where user_id = :user_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(["user_id" => $user['id']]);
+        $users_groups = $stmt->fetch();
+        $user['groups'] = $users_groups['name'];
+
+        $res['user'] = $user;
 
         $sql = "SELECT *
             from location where location_id = :location_id";
