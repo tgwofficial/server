@@ -58,7 +58,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $updateMapper->save($updateEntity);
     }
 
-    $response = $response->withJson(["success"=>true], 201);
+    $response = $response->withJson(["success"=>"true"], 201);
     return $response;
 });
 
@@ -96,7 +96,7 @@ $app->post('/api/location/create', function (Request $request, Response $respons
     $locMapper = new LocationMapper($this->db);
     $locMapper->save($locEntity);
 
-    $response = $response->withJson(["success"=>true], 201);
+    $response = $response->withJson(["success"=>"true"], 201);
 
 
     return $response;
