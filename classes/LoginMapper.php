@@ -40,6 +40,13 @@ class LoginMapper extends Mapper
             $locs[] = $loc;
         }
         $locs = array_reverse($locs);
+        
+        if ($user['groups']=="bidan") {
+            $childLocs = $this->getChildLocations($res['user_location']);
+            foreach ($childLocs as $child) {
+                $locs[] = $child;
+            }
+        }
 
         $res['locations_tree'] = $locs;        
 
@@ -53,5 +60,17 @@ class LoginMapper extends Mapper
         $stmt->execute(["parent_location" => $loc['parent_location']]);
         $loc = $stmt->fetch();
         return $loc;
+    }
+
+    private function getChildLocations($loc){
+        $sql = "SELECT *
+            from location where parent_location = :location_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(["location_id" => $loc['location_id']]);
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $results[] = $row;
+        }
+        return $results;
     }
 }
