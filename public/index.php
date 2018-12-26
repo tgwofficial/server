@@ -57,7 +57,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $updateMapper = new UpdateMapper($this->db);
         $dataMapper = new DataMapper($this->db);
         $updateMapper->save($updateEntity);
-        $dataMapper->save($update['form_name'],$update['data'][0]);
+        $dataMapper->save($update['form_name'],json_decode($update['data'],TRUE));
     }
 
     $response = $response->withJson(["success"=>"true"], 201);
