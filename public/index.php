@@ -127,6 +127,64 @@ $app->get('/api/location', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->get('/api/location/child', function (Request $request, Response $response) {
+    $location_id = $request->getParam('location-id');
+    if($location_id==""){
+        $this->logger->addInfo("Get Child Location: Error request");
+        return $response->withStatus(400);
+    }
+    $this->logger->addInfo("Get Child Locations: location-id=".$location_id);
+    $mapper = new LocationMapper($this->db);
+    $location = $mapper->getChildLocationById($location_id);
+    $response = $response->withJson($location);
+
+    return $response;
+});
+
+$app->get('/api/data/reports', function (Request $request, Response $response) {
+    $location_id = $request->getParam('location-id');
+    $thn = $request->getParam('t');
+    $bln = $request->getParam('b');
+    if($location_id==""){
+        $this->logger->addInfo("Get Data Reports: Error request");
+        return $response->withStatus(400);
+    }
+    $this->logger->addInfo("Get Data Reports: location-id=".$location_id);
+    $mapper = new LocationMapper($this->db);
+    $dataMapper = new DataMapper($this->db);
+    $location = $mapper->getLocationById($location_id);
+    if ($bln=="99") {
+        $location['data'] = $dataMapper->getYearlyReports($location,$thn,$bln);
+    }else{
+        $location['data'] = $dataMapper->getReports($location,$thn,$bln);
+    }
+
+    $response = $response->withJson($location);
+
+    return $response;
+});
+
+$app->get('/api/data/reports/child', function (Request $request, Response $response) {
+    $location_id = $request->getParam('location-id');
+    $thn = $request->getParam('t');
+    $bln = $request->getParam('b');
+    if($location_id==""){
+        $this->logger->addInfo("Get Data Reports: Error request");
+        return $response->withStatus(400);
+    }
+    $this->logger->addInfo("Get Data Reports: location-id=".$location_id);
+    $mapper = new LocationMapper($this->db);
+    $dataMapper = new DataMapper($this->db);
+    $location = $mapper->getChildLocationById($location_id);
+    foreach ($location as $key => $loc) {
+         $location[$key]['data'] = $dataMapper->getReports($loc,$thn,$bln);
+    }
+
+    $response = $response->withJson($location);
+
+    return $response;
+});
+
 
 $app->post('/api/user/create', function (Request $request, Response $response) {
     $response->getBody()->write("Atma Project API V1 - Create User");

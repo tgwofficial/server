@@ -32,6 +32,22 @@ class LocationMapper extends Mapper
         return $loc->toArray();
     }
 
+    public function getChildLocationById($id) {
+        $sql = "SELECT *
+            from location
+            where parent_location = :location_id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(["location_id" => $id]);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $loc = new LocationEntity($row);
+            $results[] = $loc->toArray();
+        }
+
+        return $results;
+    }
+
     public function getLocationsWithNames() {
         $sql = "SELECT location.location_id,location.name,child.name as parent_location,location_tag.name as location_tag_id,location.uuid
             from location LEFT JOIN location as child ON child.parent_location=location.location_id
