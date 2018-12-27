@@ -9,7 +9,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $app = new \Slim\App(["settings" => $config]);
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write("Atma Project API V1");
+    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project API V1");
 
     return $response;
 });
@@ -38,17 +38,17 @@ $app->post('/api/push', function (Request $request, Response $response) {
     $updates = $request->getParsedBody();
     if($updates==null){
         $this->logger->addInfo("Push Update: error, updates is null");
-        return $response->withJson(["error"=>"updates is null"], 400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"updates is null"], 400);
     }
     if(key($updates)!='0'){
         $this->logger->addInfo("Push Update: error, updates is not array");
-        return $response->withJson(["error"=>"updates is not array"], 400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"updates is not array"], 400);
     }
     $keys = ["update_id","form_name","data","location_id","user_id"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$updates[0])){
             $this->logger->addInfo("Push Update: error, $key is missing");
-            return $response->withJson(["error"=>"$key is missing"], 400);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"$key is missing"], 400);
         }
     }
     $this->logger->addInfo("Push Update: ".json_encode($updates));
@@ -60,7 +60,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $dataMapper->save($update['form_name'],json_decode($update['data'],TRUE));
     }
 
-    $response = $response->withJson(["success"=>"true"], 201);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["success"=>"true"], 201);
     return $response;
 });
 
@@ -70,12 +70,12 @@ $app->get('/api/pull', function (Request $request, Response $response) {
     $location_id = $request->getParam('location-id');
     if($update_id==""||$batch_size==""||$location_id==""){
         $this->logger->addInfo("Pull Update: Error request");
-        return $response->withStatus(400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
     }
     $this->logger->addInfo("Pull Update: location-id=".$location_id."&update-id=".$update_id."&batch-size=".$batch_size);
     $mapper = new UpdateMapper($this->db);
     $updates = $mapper->getBatchUpdatesByLocationId($location_id,$update_id,$batch_size);
-    $response = $response->withJson($updates);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($updates);
 
     return $response;
 });
@@ -84,13 +84,13 @@ $app->post('/api/location/create', function (Request $request, Response $respons
     $locs = $request->getParsedBody();
     if($locs==null){
         $this->logger->addInfo("Push Update: error, locs is null");
-        return $response->withJson(["error"=>"locs is null"], 400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"locs is null"], 400);
     }
     $keys = ["name","parent_location","location_tag_id"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$locs)){
             $this->logger->addInfo("Push Update: error, $key is missing");
-            return $response->withJson(["error"=>"$key is missing"], 400);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"$key is missing"], 400);
         }
     }
     $this->logger->addInfo("Push Update: ".json_encode($locs));
@@ -98,7 +98,7 @@ $app->post('/api/location/create', function (Request $request, Response $respons
     $locMapper = new LocationMapper($this->db);
     $locMapper->save($locEntity);
 
-    $response = $response->withJson(["success"=>"true"], 201);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["success"=>"true"], 201);
 
 
     return $response;
@@ -108,7 +108,7 @@ $app->get('/api/locations', function (Request $request, Response $response) {
     $this->logger->addInfo("Get All Location");
     $mapper = new LocationMapper($this->db);
     $locations = $mapper->getLocations();
-    $response = $response->withJson($locations);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($locations);
 
     return $response;
 });
@@ -117,12 +117,12 @@ $app->get('/api/location', function (Request $request, Response $response) {
     $location_id = $request->getParam('location-id');
     if($location_id==""){
         $this->logger->addInfo("Get Location: Error request");
-        return $response->withStatus(400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
     }
     $this->logger->addInfo("Get Location: location-id=".$location_id);
     $mapper = new LocationMapper($this->db);
     $location = $mapper->getLocationById($location_id);
-    $response = $response->withJson($location);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($location);
 
     return $response;
 });
@@ -131,12 +131,12 @@ $app->get('/api/location/child', function (Request $request, Response $response)
     $location_id = $request->getParam('location-id');
     if($location_id==""){
         $this->logger->addInfo("Get Child Location: Error request");
-        return $response->withStatus(400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
     }
     $this->logger->addInfo("Get Child Locations: location-id=".$location_id);
     $mapper = new LocationMapper($this->db);
     $location = $mapper->getChildLocationById($location_id);
-    $response = $response->withJson($location);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($location);
 
     return $response;
 });
@@ -147,7 +147,7 @@ $app->get('/api/data/reports', function (Request $request, Response $response) {
     $bln = $request->getParam('b');
     if($location_id==""){
         $this->logger->addInfo("Get Data Reports: Error request");
-        return $response->withStatus(400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
     }
     $this->logger->addInfo("Get Data Reports: location-id=".$location_id);
     $mapper = new LocationMapper($this->db);
@@ -159,7 +159,7 @@ $app->get('/api/data/reports', function (Request $request, Response $response) {
         $location['data'] = $dataMapper->getReports($location,$thn,$bln);
     }
 
-    $response = $response->withJson($location);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($location);
 
     return $response;
 });
@@ -170,7 +170,7 @@ $app->get('/api/data/reports/child', function (Request $request, Response $respo
     $bln = $request->getParam('b');
     if($location_id==""){
         $this->logger->addInfo("Get Data Reports: Error request");
-        return $response->withStatus(400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
     }
     $this->logger->addInfo("Get Data Reports: location-id=".$location_id);
     $mapper = new LocationMapper($this->db);
@@ -180,26 +180,26 @@ $app->get('/api/data/reports/child', function (Request $request, Response $respo
          $location[$key]['data'] = $dataMapper->getReports($loc,$thn,$bln);
     }
 
-    $response = $response->withJson($location);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($location);
 
     return $response;
 });
 
 
 $app->post('/api/user/create', function (Request $request, Response $response) {
-    $response->getBody()->write("Atma Project API V1 - Create User");
+    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project API V1 - Create User");
 
     return $response;
 });
 
 $app->get('/api/user', function (Request $request, Response $response) {
-    $response->getBody()->write("Atma Project API V1 - Get User");
+    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project API V1 - Get User");
 
     return $response;
 });
 
 $app->get('/api/users', function (Request $request, Response $response) {
-    $response->getBody()->write("Atma Project API V1 - Get All Users");
+    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project API V1 - Get All Users");
 
     return $response;
 });
@@ -209,13 +209,13 @@ $app->post('/api/auth/login', function (Request $request, Response $response) {
     $credential = $request->getParsedBody();
     if($credential==null){
         $this->logger->addInfo("Login: error, credential is null");
-        return $response->withJson(["error"=>"credential is null"], 400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"credential is null"], 400);
     }
     $keys = ["username","password"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$credential)){
             $this->logger->addInfo("Login: error, $key is missing");
-            return $response->withJson(["error"=>"$key is missing"], 400);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"$key is missing"], 400);
         }
     }
     $postdata = http_build_query(
@@ -238,9 +238,9 @@ $app->post('/api/auth/login', function (Request $request, Response $response) {
     if($logged){
         $mapper = new LoginMapper($this->db);
         $info = $mapper->getLoginInfo($credential['username']);
-        $response = $response->withJson($info);
+        $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($info);
     }else{
-        return $response->withStatus(401);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(401);
     }
 
     return $response;
@@ -251,19 +251,19 @@ $app->get('/api/auth/login', function (Request $request, Response $response) {
     $password = $request->getParam('password');
     if($username==""||$password==""){
         $this->logger->addInfo("Login: Error request, username or password is empty");
-        return $response->withJson(["error"=>"username or password is empty"], 400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"username or password is empty"], 400);
     }
     $credential['username'] = $username;
     $credential['password'] = $password;
     if($credential==null){
         $this->logger->addInfo("Login: error, credential is null");
-        return $response->withJson(["error"=>"credential is null"], 400);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"credential is null"], 400);
     }
     $keys = ["username","password"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$credential)){
             $this->logger->addInfo("Login: error, $key is missing");
-            return $response->withJson(["error"=>"$key is missing"], 400);
+            return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"$key is missing"], 400);
         }
     }
     $postdata = http_build_query(
@@ -286,9 +286,9 @@ $app->get('/api/auth/login', function (Request $request, Response $response) {
     if($logged){
         $mapper = new LoginMapper($this->db);
         $info = $mapper->getLoginInfo($credential['username']);
-        $response = $response->withJson($info);
+        $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($info);
     }else{
-        return $response->withStatus(401);
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(401);
     }
 
     return $response;
