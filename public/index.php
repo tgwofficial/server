@@ -44,7 +44,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $this->logger->addInfo("Push Update: error, updates is not array");
         return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"updates is not array"], 400);
     }
-    $keys = ["update_id","form_name","data","location_id","user_id"];
+    $keys = ["update_id","form_name","data","desa","dusun","user_id"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$updates[0])){
             $this->logger->addInfo("Push Update: error, $key is missing");
@@ -67,17 +67,31 @@ $app->post('/api/push', function (Request $request, Response $response) {
 $app->get('/api/pull', function (Request $request, Response $response) {
     $update_id = $request->getParam('update-id');
     $batch_size = $request->getParam('batch-size');
-    $location_id = $request->getParam('location-id');
-    if($update_id==""||$batch_size==""||$location_id==""){
+    $desa = $request->getParam('desa');
+    $dusun = $request->getParam('dusun');
+    if($update_id==""||$batch_size==""){
         $this->logger->addInfo("Pull Update: Error request");
         return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
     }
-    $this->logger->addInfo("Pull Update: location-id=".$location_id."&update-id=".$update_id."&batch-size=".$batch_size);
+    if($desa==""&&$dusun==""){
+        $this->logger->addInfo("Pull Update: Error request");
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
+    }
     $mapper = new UpdateMapper($this->db);
-    $updates = $mapper->getBatchUpdatesByLocationId($location_id,$update_id,$batch_size);
-    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($updates);
+    if ($desa!="") {
+        $this->logger->addInfo("Pull Update: desa=".$desa."&update-id=".$update_id."&batch-size=".$batch_size);
+        $updates = $mapper->getBatchUpdatesByDesa($desa,$update_id,$batch_size);
+        $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($updates);
 
-    return $response;
+        return $response;
+    }elseif ($dusun!="") {
+        $this->logger->addInfo("Pull Update: dusun=".$dusun."&update-id=".$update_id."&batch-size=".$batch_size);
+        $updates = $mapper->getBatchUpdatesByDusun($dusun,$update_id,$batch_size);
+        $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($updates);
+
+        return $response;
+    }
+    
 });
 
 $app->post('/api/location/create', function (Request $request, Response $response) {

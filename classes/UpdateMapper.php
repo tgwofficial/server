@@ -42,6 +42,32 @@ class UpdateMapper extends Mapper
         return $results;
     }
 
+    public function getBatchUpdatesByDesa($desa,$update_id,$batch) {
+        $sql = "SELECT *
+            from updates WHERE update_id > $update_id AND desa = '$desa' LIMIT $batch";
+        $stmt = $this->db->query($sql);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $update = new UpdateEntity($row);
+            $results[] = $update->toArray();
+        }
+        return $results;
+    }
+
+    public function getBatchUpdatesByDusun($dusun,$update_id,$batch) {
+        $sql = "SELECT *
+            from updates WHERE update_id > $update_id AND dusun = '$dusun' LIMIT $batch";
+        $stmt = $this->db->query($sql);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $update = new UpdateEntity($row);
+            $results[] = $update->toArray();
+        }
+        return $results;
+    }
+
     public function getUpdateById($id) {
         $sql = "SELECT *
             from updates where update_id = :update_id";

@@ -9,6 +9,8 @@ class UpdateEntity
     protected $form_name;
     protected $data;
     protected $location_id;
+    protected $desa;
+    protected $dusun;
     protected $user_id;
     protected $server_timestamp;
 
@@ -20,6 +22,8 @@ class UpdateEntity
         $this->form_name = $data['form_name'];
         $this->data = $data['data'];
         $this->location_id = $data['location_id'];
+        $this->desa = $data['desa'];
+        $this->dusun = $data['dusun'];
         $this->user_id = $data['user_id'];
         if(isset($data['server_timestamp'])) {
             $this->server_timestamp = $data['server_timestamp'];
@@ -56,8 +60,16 @@ class UpdateEntity
         return $this->server_timestamp;
     }
 
+    public function getDesa() {
+        return $this->desa;
+    }
+
+    public function getDusun() {
+        return $this->dusun;
+    }
+
     public function toArray(){
-        return ["update_id"=>$this->getUpdateId(),"form_name"=>$this->getFormName(),"data"=>$this->getData(),"location_id"=>$this->getLocationId(),"user_id"=>$this->getUserId()];
+        return ["update_id"=>$this->getUpdateId(),"form_name"=>$this->getFormName(),"data"=>$this->getData(),"location_id"=>$this->getLocationId(),"desa"=>$this->getDesa(),"dusun"=>$this->getDusun(),"user_id"=>$this->getUserId()];
     }
 
 }
