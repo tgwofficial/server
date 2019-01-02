@@ -61,7 +61,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $data['user_id'] = $updateEntity->getUserId();
         $data['location_id'] = $updateEntity->getLocationId();
         $data['update_id'] = $updateEntity->getUpdateId();
-        $data['timestamp'] = date("Y-m-d H:i:s",$updateEntity->getUpdateId());
+        $data['timestamp'] = date("Y-m-d H:i:s",substr($updateEntity->getUpdateId(),0,10));
         $dataMapper->save($update['form_name'],$data);
     }
 
