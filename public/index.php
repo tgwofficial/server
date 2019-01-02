@@ -53,11 +53,15 @@ $app->post('/api/push', function (Request $request, Response $response) {
     }
     $this->logger->addInfo("Push Update: ".json_encode($updates));
     foreach ($updates as $update) {
+        $data = json_decode($update['data'],TRUE);
         $updateEntity = new UpdateEntity($update);
         $updateMapper = new UpdateMapper($this->db);
         $dataMapper = new DataMapper($this->db);
         $updateMapper->save($updateEntity);
-        $dataMapper->save($update['form_name'],json_decode($update['data'],TRUE));
+        $data['user_id'] = $updateEntity->getUserId();
+        $data['location_id'] = $updateEntity->getLocationId();
+        $data['update_id'] = $updateEntity->getUpdateId();
+        $dataMapper->save($update['form_name'],$data);
     }
 
     $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["success"=>"true"], 201);

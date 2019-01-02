@@ -6,7 +6,40 @@ class DataMapper extends Mapper
 {
     public function save($form_name, array $data) {
         $keys = array_keys($data);
-        $sql = "INSERT INTO data_".$form_name."(".implode(',', $keys).") values (:".implode(',:', $keys).")";
+
+        $sql = "SHOW columns FROM datas_".$form_name;
+        try {
+            $this->db->query($sql);
+        } catch (PDOException $e) {
+            $sql = "CREATE TABLE datas_".$form_name." (id INT(11) AUTO_INCREMENT PRIMARY KEY, ".implode(' TEXT NOT NULL, ', $keys)." TEXT NOT NULL)";
+            $this->db->query($sql);
+        }
+
+        $sql = "SHOW columns FROM datas_".$form_name;
+        $stmt = $this->db->query($sql);
+        $columns = [];
+        while($row = $stmt->fetch()) {
+            $columns[$row['Field']] = true;
+        }
+
+        $miss_key = [];
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $columns)) {
+                $miss_key[] = $key;
+            }
+        }
+
+        if (!empty($miss_key)) {
+            $sql = "ALTER TABLE datas_".$form_name;
+            $adds = [];
+            foreach ($miss_key as $key) {
+                $adds[] = "ADD COLUMN ".$key." TEXT NOT NULL";
+            }
+            $sql = $sql." ".implode(', ', $adds);
+            $this->db->query($sql);
+        }
+
+        $sql = "INSERT INTO datas_".$form_name."(".implode(',', $keys).") values (:".implode(',:', $keys).")";
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute($data);
         if(!$result) {
