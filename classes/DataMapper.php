@@ -11,7 +11,7 @@ class DataMapper extends Mapper
         try {
             $this->db->query($sql);
         } catch (PDOException $e) {
-            $sql = "CREATE TABLE data_".$form_name." (id INT(11) AUTO_INCREMENT PRIMARY KEY, ".implode(' TEXT NOT NULL, ', $keys)." TEXT NOT NULL)";
+            $sql = "CREATE TABLE data_".$form_name." (id INT(11) AUTO_INCREMENT PRIMARY KEY, ".implode(' TEXT NOT NULL COLLATE utf8_general_ci, ', $keys)." TEXT NOT NULL COLLATE utf8_general_ci)";
             $this->db->query($sql);
         }
 
@@ -33,7 +33,7 @@ class DataMapper extends Mapper
             $sql = "ALTER TABLE data_".$form_name;
             $adds = [];
             foreach ($miss_key as $key) {
-                $adds[] = "ADD COLUMN ".$key." TEXT NOT NULL";
+                $adds[] = "ADD COLUMN ".$key." TEXT NOT NULL COLLATE utf8_general_ci";
             }
             $sql = $sql." ".implode(', ', $adds);
             $this->db->query($sql);
