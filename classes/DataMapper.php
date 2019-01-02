@@ -7,15 +7,15 @@ class DataMapper extends Mapper
     public function save($form_name, array $data) {
         $keys = array_keys($data);
 
-        $sql = "SHOW columns FROM datas_".$form_name;
+        $sql = "SHOW columns FROM data_".$form_name;
         try {
             $this->db->query($sql);
         } catch (PDOException $e) {
-            $sql = "CREATE TABLE datas_".$form_name." (id INT(11) AUTO_INCREMENT PRIMARY KEY, ".implode(' TEXT NOT NULL, ', $keys)." TEXT NOT NULL)";
+            $sql = "CREATE TABLE data_".$form_name." (id INT(11) AUTO_INCREMENT PRIMARY KEY, ".implode(' TEXT NOT NULL, ', $keys)." TEXT NOT NULL)";
             $this->db->query($sql);
         }
 
-        $sql = "SHOW columns FROM datas_".$form_name;
+        $sql = "SHOW columns FROM data_".$form_name;
         $stmt = $this->db->query($sql);
         $columns = [];
         while($row = $stmt->fetch()) {
@@ -30,7 +30,7 @@ class DataMapper extends Mapper
         }
 
         if (!empty($miss_key)) {
-            $sql = "ALTER TABLE datas_".$form_name;
+            $sql = "ALTER TABLE data_".$form_name;
             $adds = [];
             foreach ($miss_key as $key) {
                 $adds[] = "ADD COLUMN ".$key." TEXT NOT NULL";
@@ -39,7 +39,7 @@ class DataMapper extends Mapper
             $this->db->query($sql);
         }
 
-        $sql = "INSERT INTO datas_".$form_name."(".implode(',', $keys).") values (:".implode(',:', $keys).")";
+        $sql = "INSERT INTO data_".$form_name."(".implode(',', $keys).") values (:".implode(',:', $keys).")";
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute($data);
         if(!$result) {
