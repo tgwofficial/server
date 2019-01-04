@@ -75,7 +75,9 @@ class DataMapper extends Mapper
             left join data_status_persalinan
             on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
             where data_identitas_ibu.dusun = :location_id
-            and (data_status_persalinan.tgl_persalinan='' or data_status_persalinan.tgl_persalinan >= :end_time)";
+            and (data_status_persalinan.tgl_persalinan='' or DATE(data_status_persalinan.tgl_persalinan) >= :end_time)
+            and DATE(data_identitas_ibu.hpht) < :end_time
+            and :end_time < '".date("Y-m",strtotime(date("Y-m-d")." +1 month"))."-01'";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
         $row = $stmt->fetch();
@@ -132,7 +134,9 @@ class DataMapper extends Mapper
                 left join data_status_persalinan
                 on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
                 where data_identitas_ibu.dusun = :location_id
-                and (data_status_persalinan.tgl_persalinan='' or data_status_persalinan.tgl_persalinan >= :end_time)";
+                and (data_status_persalinan.tgl_persalinan='' or DATE(data_status_persalinan.tgl_persalinan) >= :end_time)
+                and DATE(data_identitas_ibu.hpht) < :end_time
+                and :end_time < '".date("Y-m",strtotime(date("Y-m-d")." +1 month"))."-01'";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
             $row = $stmt->fetch();
