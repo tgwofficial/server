@@ -63,7 +63,7 @@ class DataMapper extends Mapper
 
         $sql = "SELECT COUNT(*) as jml
             from data_identitas_ibu
-            where data_identitas_ibu.location_id = :location_id
+            where data_identitas_ibu.dusun = :location_id
             and data_identitas_ibu.timestamp >= :start_time and data_identitas_ibu.timestamp < :end_time";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
@@ -74,7 +74,7 @@ class DataMapper extends Mapper
             from data_identitas_ibu
             left join data_status_persalinan
             on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
-            where data_identitas_ibu.location_id = :location_id
+            where data_identitas_ibu.dusun = :location_id
             and (data_status_persalinan.tgl_persalinan='' or data_status_persalinan.tgl_persalinan >= :end_time)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
@@ -85,7 +85,7 @@ class DataMapper extends Mapper
             from data_identitas_ibu
             left join data_status_persalinan
             on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
-            where data_identitas_ibu.location_id = :location_id and tgl_persalinan >= :start_time and tgl_persalinan < :end_time";
+            where data_identitas_ibu.dusun = :location_id and tgl_persalinan >= :start_time and tgl_persalinan < :end_time";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
         $results = [];
@@ -120,7 +120,7 @@ class DataMapper extends Mapper
 
             $sql = "SELECT COUNT(*) as jml
                 from data_identitas_ibu
-                where data_identitas_ibu.location_id = :location_id
+                where data_identitas_ibu.dusun = :location_id
                 and data_identitas_ibu.timestamp >= :start_time and data_identitas_ibu.timestamp < :end_time";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
@@ -131,7 +131,7 @@ class DataMapper extends Mapper
                 from data_identitas_ibu
                 left join data_status_persalinan
                 on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
-                where data_identitas_ibu.location_id = :location_id
+                where data_identitas_ibu.dusun = :location_id
                 and (data_status_persalinan.tgl_persalinan='' or data_status_persalinan.tgl_persalinan >= :end_time)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
@@ -142,7 +142,7 @@ class DataMapper extends Mapper
                 from data_identitas_ibu
                 left join data_status_persalinan
                 on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
-                where data_identitas_ibu.location_id = :location_id and tgl_persalinan >= :start_time and tgl_persalinan < :end_time";
+                where data_identitas_ibu.dusun = :location_id and tgl_persalinan >= :start_time and tgl_persalinan < :end_time";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
             $results = [];
