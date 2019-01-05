@@ -9,7 +9,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $app = new \Slim\App(["settings" => $config]);
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project API V1");
+    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project Dev API V1");
 
     return $response;
 });
