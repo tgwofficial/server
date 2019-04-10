@@ -26,8 +26,8 @@ class LoginMapper extends Mapper
 
         $res['user'] = $user;
 
-        $sql = "SELECT *
-            from location where location_id = :location_id";
+        $sql = "SELECT location.*, location_tag.name as location_tag
+            from location LEFT JOIN location_tag ON location.location_tag_id = location_tag.location_tag_id where location_id = :location_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $user_map['location_id']]);
         $loc = $stmt->fetch();
