@@ -92,8 +92,8 @@ class UpdateMapper extends Mapper
 
     public function save(UpdateEntity $update) {
         $sql = "INSERT INTO updates
-            (update_id, form_name, data, location_id, desa, dusun, user_id) values
-            (:update_id, :form_name, :data, :location_id, :desa, :dusun, :user_id)";
+            (update_id, form_name, data, location_id, desa, posyandu, dusun, user_id) values
+            (:update_id, :form_name, :data, :location_id, :desa, :posyandu, :dusun, :user_id)";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
@@ -102,6 +102,7 @@ class UpdateMapper extends Mapper
 			"data" => json_encode($update->getData()),
             "location_id" => $update->getLocationId(),
             "desa" => $update->getDesa(),
+            "posyandu" => $update->getPosyandu(),
             "dusun" => $update->getDusun(),
 			"user_id" => $update->getUserId(),
         ]);
