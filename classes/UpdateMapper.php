@@ -42,6 +42,19 @@ class UpdateMapper extends Mapper
         return $results;
     }
 
+    public function getBatchUpdatesByTag($loc_tag,$loc_name,$update_id,$batch) {
+        $sql = "SELECT *
+            from updates WHERE update_id > $update_id AND ".$loc_tag." = '$loc_name' LIMIT $batch";
+        $stmt = $this->db->query($sql);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $update = new UpdateEntity($row);
+            $results[] = $update->toArray();
+        }
+        return $results;
+    }
+
     public function getBatchUpdatesByDesa($desa,$update_id,$batch) {
         $sql = "SELECT *
             from updates WHERE update_id > $update_id AND desa = '$desa' LIMIT $batch";
