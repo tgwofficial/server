@@ -41,10 +41,14 @@ class LoginMapper extends Mapper
         }
         $locs = array_reverse($locs);
         
-        if ($user['groups']=="bidan") {
-            $childLocs = $this->getChildLocations($res['user_location']);
-            foreach ($childLocs as $child) {
-                $locs[] = $child;
+        $childLocs = $this->getChildLocations($res['user_location']);
+        foreach ($childLocs as $child) {
+            $locs[] = $child;
+            $childs = $this->getChildLocations($child);
+            if(!empty($childs)){
+                foreach ($childs as $child) {
+                    $locs[] = $child;
+                }
             }
         }
 

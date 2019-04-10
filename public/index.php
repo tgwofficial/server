@@ -44,7 +44,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $this->logger->addInfo("Push Update: error, updates is not array");
         return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"updates is not array"], 400);
     }
-    $keys = ["update_id","form_name","data","desa","dusun","user_id"];
+    $keys = ["update_id","form_name","data","posyandu","desa","dusun","user_id"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$updates[0])){
             $this->logger->addInfo("Push Update: error, $key is missing");
@@ -324,7 +324,7 @@ $app->get('/api/auth/login', function (Request $request, Response $response) {
     );
 
     $context  = stream_context_create($opts);
-    $logged = file_get_contents('http://ard.theseforall.org/auth/login_api', false, $context)=='success'?true:false;
+    $logged = file_get_contents('http://dev.ard.theseforall.org/auth/login_api', false, $context)=='success'?true:false;
     if($logged){
         $mapper = new LoginMapper($this->db);
         $info = $mapper->getLoginInfo($credential['username']);
