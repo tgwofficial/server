@@ -54,8 +54,8 @@ class LoginMapper extends Mapper
     }
 
     private function getParentLocation($loc){
-        $sql = "SELECT *
-            from location where location_id = :parent_location";
+        $sql = "SELECT location.*, location_tag.name as location_tag
+            from location LEFT JOIN location_tag ON location.location_tag_id = location_tag.location_tag_id  where location_id = :parent_location";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["parent_location" => $loc['parent_location']]);
         $loc = $stmt->fetch();
@@ -63,8 +63,8 @@ class LoginMapper extends Mapper
     }
 
     private function getChildLocations($loc){
-        $sql = "SELECT *
-            from location where parent_location = :location_id";
+        $sql = "SELECT location.*, location_tag.name as location_tag
+            from location LEFT JOIN location_tag ON location.location_tag_id = location_tag.location_tag_id where parent_location = :location_id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc['location_id']]);
         $results = [];
