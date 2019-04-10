@@ -99,6 +99,29 @@ $app->get('/api/pull', function (Request $request, Response $response) {
     
 });
 
+$app->get('/api/pullv2', function (Request $request, Response $response) {
+    $update_id = $request->getParam('update-id');
+    $batch_size = $request->getParam('batch-size');
+    $loc_tag = $request->getParam('loc-id');
+    $loc_name = $request->getParam('loc-name');
+
+    if($update_id==""||$batch_size==""){
+        $this->logger->addInfo("Pull Update: Error request");
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
+    }
+    if($loc_tag==""||$loc_name==""){
+        $this->logger->addInfo("Pull Update: Error request");
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
+    }
+    $mapper = new UpdateMapper($this->db);
+
+    $this->logger->addInfo("Pull Update: ".$log_tag."=".$loc_name."&update-id=".$update_id."&batch-size=".$batch_size);
+    $updates = $mapper->getBatchUpdatesByTag($loc_tag,$loc_name,$update_id,$batch_size);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($updates);
+
+    return $response;
+});
+
 $app->post('/api/location/create', function (Request $request, Response $response) {
     $locs = $request->getParsedBody();
     if($locs==null){
