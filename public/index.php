@@ -9,7 +9,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $app = new \Slim\App(["settings" => $config]);
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project API V1");
+    $response->withHeader('Access-Control-Allow-Origin', '*')->getBody()->write("Atma Project Dev API V1");
 
     return $response;
 });
@@ -44,7 +44,7 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $this->logger->addInfo("Push Update: error, updates is not array");
         return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"updates is not array"], 400);
     }
-    $keys = ["update_id","form_name","data","desa","dusun","user_id"];
+    $keys = ["update_id","form_name","data","posyandu","desa","dusun","user_id"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$updates[0])){
             $this->logger->addInfo("Push Update: error, $key is missing");
@@ -97,6 +97,29 @@ $app->get('/api/pull', function (Request $request, Response $response) {
         return $response;
     }
     
+});
+
+$app->get('/api/pullv2', function (Request $request, Response $response) {
+    $update_id = $request->getParam('update-id');
+    $batch_size = $request->getParam('batch-size');
+    $loc_tag = $request->getParam('loc-id');
+    $loc_name = $request->getParam('loc-name');
+
+    if($update_id==""||$batch_size==""){
+        $this->logger->addInfo("Pull Update: Error request");
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
+    }
+    if($loc_tag==""||$loc_name==""){
+        $this->logger->addInfo("Pull Update: Error request");
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(400);
+    }
+    $mapper = new UpdateMapper($this->db);
+
+    $this->logger->addInfo("Pull Update: ".$log_tag."=".$loc_name."&update-id=".$update_id."&batch-size=".$batch_size);
+    $updates = $mapper->getBatchUpdatesByTag($loc_tag,$loc_name,$update_id,$batch_size);
+    $response = $response->withHeader('Access-Control-Allow-Origin', '*')->withJson($updates);
+
+    return $response;
 });
 
 $app->post('/api/location/create', function (Request $request, Response $response) {
@@ -301,7 +324,7 @@ $app->get('/api/auth/login', function (Request $request, Response $response) {
     );
 
     $context  = stream_context_create($opts);
-    $logged = file_get_contents('http://ard.theseforall.org/auth/login_api', false, $context)=='success'?true:false;
+    $logged = file_get_contents('http://dev.ard.theseforall.org/auth/login_api', false, $context)=='success'?true:false;
     if($logged){
         $mapper = new LoginMapper($this->db);
         $info = $mapper->getLoginInfo($credential['username']);
