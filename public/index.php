@@ -44,6 +44,10 @@ $app->post('/api/push', function (Request $request, Response $response) {
         $this->logger->addInfo("Push Update: error, updates is not array");
         return $response->withHeader('Access-Control-Allow-Origin', '*')->withJson(["error"=>"updates is not array"], 400);
     }
+    if(empty($updates[0])){
+        $this->logger->addInfo("Push Update: no updates");
+        return $response->withHeader('Access-Control-Allow-Origin', '*')->withStatus(204);
+    }
     $keys = ["update_id","form_name","data","posyandu","desa","dusun","user_id"];
     foreach ($keys as $key) {
         if(!array_key_exists($key,$updates[0])){
