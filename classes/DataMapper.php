@@ -138,7 +138,7 @@ class DataMapper extends Mapper
                 and data_identitas_ibu.unique_id IN (SELECT unique_id FROM data_identitas_ibu as ibu WHERE NOT EXISTS (SELECT unique_id FROM data_close_ibu WHERE unique_id = ibu.unique_id))
                 and data_identitas_ibu.unique_id IN (SELECT unique_id FROM data_identitas_ibu as ibu WHERE NOT EXISTS (SELECT id_ibu FROM data_status_persalinan WHERE id_ibu = ibu.unique_id and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') < :end_time))";
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
+            $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
             $row = $stmt->fetch();
             $report['ibu_hamil_aktif'] = $row['jml'];
 
