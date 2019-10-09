@@ -64,7 +64,8 @@ class DataMapper extends Mapper
         $sql = "SELECT COUNT(*) as jml
             from data_identitas_ibu
             where data_identitas_ibu.dusun = :location_id
-            and data_identitas_ibu.timestamp >= :start_time and data_identitas_ibu.timestamp < :end_time";
+            and data_identitas_ibu.timestamp >= :start_time and data_identitas_ibu.timestamp < :end_time
+            and data_identitas_ibu.unique_id IN (SELECT unique_id FROM `data_identitas_ibu` as ibu WHERE NOT EXISTS (SELECT unique_id FROM data_close_ibu WHERE unique_id = ibu.unique_id))";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
         $row = $stmt->fetch();
@@ -72,14 +73,12 @@ class DataMapper extends Mapper
 
         $sql = "SELECT COUNT(*) as jml
             from data_identitas_ibu
-            left join data_status_persalinan
-            on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
             where data_identitas_ibu.dusun = :location_id
-            and (data_status_persalinan.tgl_persalinan='' or DATE(data_status_persalinan.tgl_persalinan) >= :end_time)
-            and DATE(data_identitas_ibu.hpht) < :end_time
-            and :end_time < '".date("Y-m",strtotime(date("Y-m-d")." +1 month"))."-01'";
+            and data_identitas_ibu.timestamp < :start_time
+            and data_identitas_ibu.unique_id IN (SELECT unique_id FROM data_identitas_ibu as ibu WHERE NOT EXISTS (SELECT unique_id FROM data_close_ibu WHERE unique_id = ibu.unique_id))
+            and data_identitas_ibu.unique_id IN (SELECT unique_id FROM data_identitas_ibu as ibu WHERE NOT EXISTS (SELECT id_ibu FROM data_status_persalinan WHERE id_ibu = ibu.unique_id and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') < :end_time))";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
+        $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
         $row = $stmt->fetch();
         $report['ibu_hamil_aktif'] = $row['jml'];
 
@@ -87,7 +86,9 @@ class DataMapper extends Mapper
             from data_identitas_ibu
             left join data_status_persalinan
             on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
-            where data_identitas_ibu.dusun = :location_id and tgl_persalinan >= :start_time and tgl_persalinan < :end_time";
+            where data_identitas_ibu.dusun = :location_id 
+            and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') >= :start_time 
+            and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') < :end_time";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
         $results = [];
@@ -123,7 +124,8 @@ class DataMapper extends Mapper
             $sql = "SELECT COUNT(*) as jml
                 from data_identitas_ibu
                 where data_identitas_ibu.dusun = :location_id
-                and data_identitas_ibu.timestamp >= :start_time and data_identitas_ibu.timestamp < :end_time";
+                and data_identitas_ibu.timestamp >= :start_time and data_identitas_ibu.timestamp < :end_time
+                and data_identitas_ibu.unique_id IN (SELECT unique_id FROM `data_identitas_ibu` as ibu WHERE NOT EXISTS (SELECT unique_id FROM data_close_ibu WHERE unique_id = ibu.unique_id))";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
             $row = $stmt->fetch();
@@ -131,12 +133,10 @@ class DataMapper extends Mapper
 
             $sql = "SELECT COUNT(*) as jml
                 from data_identitas_ibu
-                left join data_status_persalinan
-                on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
                 where data_identitas_ibu.dusun = :location_id
-                and (data_status_persalinan.tgl_persalinan='' or DATE(data_status_persalinan.tgl_persalinan) >= :end_time)
-                and DATE(data_identitas_ibu.hpht) < :end_time
-                and :end_time < '".date("Y-m",strtotime(date("Y-m-d")." +1 month"))."-01'";
+                and data_identitas_ibu.timestamp < :start_time
+                and data_identitas_ibu.unique_id IN (SELECT unique_id FROM data_identitas_ibu as ibu WHERE NOT EXISTS (SELECT unique_id FROM data_close_ibu WHERE unique_id = ibu.unique_id))
+                and data_identitas_ibu.unique_id IN (SELECT unique_id FROM data_identitas_ibu as ibu WHERE NOT EXISTS (SELECT id_ibu FROM data_status_persalinan WHERE id_ibu = ibu.unique_id and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') < :end_time))";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"end_time" => $end_time]);
             $row = $stmt->fetch();
@@ -146,7 +146,9 @@ class DataMapper extends Mapper
                 from data_identitas_ibu
                 left join data_status_persalinan
                 on data_status_persalinan.id_ibu = data_identitas_ibu.unique_id
-                where data_identitas_ibu.dusun = :location_id and tgl_persalinan >= :start_time and tgl_persalinan < :end_time";
+                where data_identitas_ibu.dusun = :location_id 
+                and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') >= :start_time 
+                and STR_TO_DATE(data_status_persalinan.tgl_persalinan, '%d-%m-%Y') < :end_time";
             $stmt = $this->db->prepare($sql);
             $stmt->execute(["location_id" => $loc_name,"start_time" => $start_time,"end_time" => $end_time]);
             $results = [];
